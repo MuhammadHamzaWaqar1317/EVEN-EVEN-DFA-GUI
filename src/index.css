@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  overflow: hidden;
+}
+
+.arrow {
+  pointer-events: none;
+}
+
+.arrow__path {
+  stroke: #000;
+  fill: transparent;
+  /* stroke-dasharray: 4 2; */
+}
+
+.arrow__head line {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+.pic-right {
+  position: absolute;
+  transform: rotate(90deg);
+  left: 300px;
+}
+.pic-left {
+  position: absolute;
+  transform: rotate(90deg);
+  right: 300px;
+}
