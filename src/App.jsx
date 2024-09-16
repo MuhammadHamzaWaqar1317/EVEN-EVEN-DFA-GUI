@@ -1,16 +1,15 @@
 import { useState } from "react";
-import Arrow, { DIRECTION } from "react-arrows";
-import reactLogo from "./assets/react.svg";
-import { ArcherContainer, ArcherElement } from "react-archer";
+import "./App.css";
 import img from "./assets/Capture.jpg";
 import img2 from "./assets/imgb.jpg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import Xarrow from "react-xarrows";
+import { Input, Button, Form } from "antd";
 
 function App() {
+  const [simulate, setSimulate] = useState(false);
+
   const [counter, setCounter] = useState(0);
   const [string, setString] = useState("aaabba");
+
   const [state, setState] = useState("q0");
   const [q0, setQ0] = useState(true);
   const [q1, setQ1] = useState(false);
@@ -58,24 +57,79 @@ function App() {
     console.log("String: ", string.charAt(0) == "a");
   };
 
-  console.log(state);
+  const handleReset = () => {
+    setCounter(0);
+    setState("q0");
+    setQ0(true);
+    setQ1(false);
+    setQ2(false);
+    setQ3(false);
+  };
+
+  const handleChange = (e) => {
+    setString(e.target.value.toLowerCase());
+    handleReset();
+  };
+
+  console.log(string);
 
   return (
     <>
-      <ArcherContainer strokeColor="red" lineStyle="angle">
-        <div className="h-screen w-screen flex justify-center items-center min-w-[600px] ">
-          <div className="w-[500px] flex flex-row flex-wrap gap-y-[253px] justify-center items-center relative">
-            <Circle state={q0} name={"q0"} initial={true} />
-            <img src={img} alt="" />
-            <Circle state={q1} name={"q1"} />
-            <img src={img2} alt="" className="pic-right" />
-            <img src={img2} alt="" className="pic-left" />
-            <Circle state={q2} name={"q2"} />
-            <img src={img} alt="" />
-            <Circle state={q3} name={"q3"} />
+      <div className="h-screen w-screen flex justify-center items-center flex-col gap-3 min-w-[600px] ">
+        <div className="flex flex-col items-center ">
+          <div className="flex gap-3">
+            <Form>
+              <Form.Item
+                name="username"
+                rules={[
+                  {
+                    required: true,
+                    pattern: new RegExp(/^[AaBb]+$/),
+                    message: "Please enter string containg a or b",
+                  },
+                ]}
+              >
+                <Input
+                  allowClear={true}
+                  placeholder="Enter String"
+                  onChange={handleChange}
+                  value={string}
+                />
+              </Form.Item>
+            </Form>
+            <Button type="primary">Validate</Button>
+            <Button type="primary" onClick={() => setSimulate(true)}>
+              Simulate
+            </Button>
+          </div>
+          <div className="">
+            <div className="flex gap-3">
+              {simulate && (
+                <Button type="primary" onClick={handleReset}>
+                  Reset
+                </Button>
+              )}
+              {simulate && (
+                <Button type="primary" onClick={handleClick}>
+                  Next
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </ArcherContainer>
+
+        <div className="w-[500px] flex flex-row flex-wrap gap-y-[253px] justify-center items-center relative">
+          <Circle state={q0} name={"q0"} initial={true} />
+          <img src={img} alt="" />
+          <Circle state={q1} name={"q1"} />
+          <img src={img2} alt="" className="pic-right" />
+          <img src={img2} alt="" className="pic-left" />
+          <Circle state={q2} name={"q2"} />
+          <img src={img} alt="" />
+          <Circle state={q3} name={"q3"} />
+        </div>
+      </div>
+
       <button onClick={handleClick}>Next</button>
     </>
   );
@@ -84,32 +138,20 @@ function App() {
 function Circle({ state, name, initial, target1, target, source }) {
   return (
     <>
-      <ArcherElement
+      <div
         id={name}
-        relations={[
-          {
-            targetId: target1,
-            targetAnchor: target,
-            sourceAnchor: source,
-            label: "Arrow 3",
-          },
-        ]}
+        className={`h-[100px] w-[100px] border-black border-2 ${
+          state && "bg-green-900"
+        } circle rounded-full flex justify-center items-center`}
       >
-        <div
-          id={name}
-          className={`h-[100px] w-[100px] border-black border-2 ${
-            state && "bg-green-900"
-          } circle rounded-full flex justify-center items-center`}
-        >
-          {initial ? (
-            <div className="h-[90%] w-[90%] rounded-full border-black border-2 flex justify-center items-center">
-              {name}
-            </div>
-          ) : (
-            <div className="">{name}</div>
-          )}
-        </div>
-      </ArcherElement>
+        {initial ? (
+          <div className="h-[90%] w-[90%] rounded-full border-black border-2 flex justify-center items-center">
+            {name}
+          </div>
+        ) : (
+          <div className="">{name}</div>
+        )}
+      </div>
     </>
   );
 }

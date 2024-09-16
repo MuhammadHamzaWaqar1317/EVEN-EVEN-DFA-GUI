@@ -31,3 +31,11 @@ body {
   transform: rotate(90deg);
   right: 300px;
 }
+
+.pic {
+  transform: rotate(90deg);
+}
+
+.ant-form-item-explain-error {
+  position: fixed;
+}
