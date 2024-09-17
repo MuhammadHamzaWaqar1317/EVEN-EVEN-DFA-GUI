@@ -2,21 +2,78 @@ import { useState } from "react";
 import "./App.css";
 import img from "./assets/Capture.jpg";
 import img2 from "./assets/imgb.jpg";
+import { FaPlusMinus } from "react-icons/fa6";
+import { ToastContainer } from "react-toastify";
+
 import { Input, Button, Form } from "antd";
+import { showError, showSuccess } from "./utils/toastify";
 
 function App() {
   const [simulate, setSimulate] = useState(false);
+  const [simulationText, setSimulationText] = useState("Simulation Started");
 
   const [counter, setCounter] = useState(0);
-  const [string, setString] = useState("aaabba");
+  const [string, setString] = useState("");
+  const [invalidString, setInvalidString] = useState(false);
 
   const [state, setState] = useState("q0");
   const [q0, setQ0] = useState(true);
   const [q1, setQ1] = useState(false);
   const [q2, setQ2] = useState(false);
   const [q3, setQ3] = useState(false);
+  const regex = new RegExp(/^[AaBb]+$/);
+
+  const validate = () => {
+    let countA = 0;
+    let countB = 0;
+    let flagA = false;
+    let flagB = false;
+    for (let i = 0; i < string.length; i++) {
+      if (string.charAt(i) == "a") {
+        countA++;
+        flagA = true;
+      } else {
+        countB++;
+        flagB = true;
+      }
+    }
+    console.log(countA);
+    console.log(countB);
+
+    if (countA % 2 == 0 && countB % 2 == 0) {
+      showSuccess(`${string} : Accepted`);
+    } else if (countA % 2 == 0 && flagA && countB % 2 != 0) {
+      showError(`${string} : Rejected`);
+    } else if (countB % 2 == 0 && flagB && countA % 2 != 0) {
+      showError(`${string} : Rejected`);
+    } else {
+      showError(`${string} : Rejected`);
+    }
+  };
+
+  const handleValidation = () => {
+    if (invalidString) {
+      return;
+    }
+    validate();
+  };
+
+  const handleSimulation = () => {
+    if (invalidString) {
+      return;
+    }
+    setSimulate(true);
+  };
+
   const handleClick = () => {
+    if (invalidString) {
+      return;
+    }
+
     if (counter == string.length) {
+      validate();
+      setSimulationText("Simulation Ended");
+
       return;
     }
 
@@ -42,6 +99,7 @@ function App() {
       setQ2(q2);
       setQ3(q3);
       setState(newState);
+      setSimulationText("Simulation Started");
     };
 
     const obj = {
@@ -53,11 +111,17 @@ function App() {
 
     obj[state]();
     setCounter((prev) => prev + 1);
+    if (counter + 1 == string.length) {
+      validate();
+      setSimulationText("Simulation Ended");
 
+      return;
+    }
     console.log("String: ", string.charAt(0) == "a");
   };
 
   const handleReset = () => {
+    setSimulationText("Simulation Reset Successfully");
     setCounter(0);
     setState("q0");
     setQ0(true);
@@ -68,6 +132,7 @@ function App() {
 
   const handleChange = (e) => {
     setString(e.target.value.toLowerCase());
+    setInvalidString(!regex.test(e.target.value.toLowerCase()));
     handleReset();
   };
 
@@ -76,15 +141,16 @@ function App() {
   return (
     <>
       <div className="h-screen w-screen flex justify-center items-center flex-col gap-3 min-w-[600px] ">
-        <div className="flex flex-col items-center ">
-          <div className="flex gap-3">
+        <div className="flex flex-col items-center gap-4">
+          <div className="flex gap-3 items-center">
             <Form>
               <Form.Item
                 name="username"
+                style={{ margin: "0px" }}
                 rules={[
                   {
                     required: true,
-                    pattern: new RegExp(/^[AaBb]+$/),
+                    pattern: regex,
                     message: "Please enter string containg a or b",
                   },
                 ]}
@@ -97,11 +163,15 @@ function App() {
                 />
               </Form.Item>
             </Form>
-            <Button type="primary">Validate</Button>
-            <Button type="primary" onClick={() => setSimulate(true)}>
+            <Button type="primary" onClick={handleValidation}>
+              Validate
+            </Button>
+            <Button type="primary" onClick={handleSimulation}>
               Simulate
             </Button>
           </div>
+          {simulate && <p>{simulationText}</p>}
+
           <div className="">
             <div className="flex gap-3">
               {simulate && (
@@ -131,24 +201,30 @@ function App() {
       </div>
 
       <button onClick={handleClick}>Next</button>
+      <ToastContainer />
     </>
   );
 }
 
-function Circle({ state, name, initial, target1, target, source }) {
+function Circle({ state, name, initial }) {
   return (
     <>
       <div
         id={name}
         className={`h-[100px] w-[100px] border-black border-2 ${
-          state && "bg-green-900"
+          state && "bg-blue-500 text-white"
         } circle rounded-full flex justify-center items-center`}
       >
         {initial ? (
-          <div className="h-[90%] w-[90%] rounded-full border-black border-2 flex justify-center items-center">
-            {name}
+          <div className="h-[90%] w-[90%] flex justify-center items-center">
+            <FaPlusMinus color={`${state ? "white" : "black"} `} />
+
+            <div>{name}</div>
           </div>
         ) : (
+          // <div className="h-[90%] w-[90%] rounded-full border-black border-2 flex justify-center items-center">
+          //   {name}
+          // </div>
           <div className="">{name}</div>
         )}
       </div>
