@@ -1,12 +1,8 @@
 import { useState } from "react";
-import "./App.css";
-import img from "./assets/Capture.jpg";
-import img2 from "./assets/imgb.jpg";
-import { FaPlusMinus } from "react-icons/fa6";
 import { ToastContainer } from "react-toastify";
-
-import { Input, Button, Form } from "antd";
-import { showError, showSuccess } from "./utils/toastify";
+import "./App.css";
+import DFA from "./Components/DFA";
+import Form from "./Components/Form";
 
 function App() {
   const [simulate, setSimulate] = useState(false);
@@ -14,7 +10,7 @@ function App() {
 
   const [counter, setCounter] = useState(0);
   const [string, setString] = useState("");
-  const [invalidString, setInvalidString] = useState(false);
+  const [invalidString, setInvalidString] = useState(true);
 
   const [state, setState] = useState("q0");
   const [q0, setQ0] = useState(true);
@@ -23,211 +19,33 @@ function App() {
   const [q3, setQ3] = useState(false);
   const regex = new RegExp(/^[AaBb]+$/);
 
-  const validate = () => {
-    let countA = 0;
-    let countB = 0;
-    let flagA = false;
-    let flagB = false;
-    for (let i = 0; i < string.length; i++) {
-      if (string.charAt(i) == "a") {
-        countA++;
-        flagA = true;
-      } else {
-        countB++;
-        flagB = true;
-      }
-    }
-    console.log(countA);
-    console.log(countB);
-
-    if (countA % 2 == 0 && countB % 2 == 0) {
-      showSuccess(`${string} : Accepted`);
-    } else if (countA % 2 == 0 && flagA && countB % 2 != 0) {
-      showError(`${string} : Rejected`);
-    } else if (countB % 2 == 0 && flagB && countA % 2 != 0) {
-      showError(`${string} : Rejected`);
-    } else {
-      showError(`${string} : Rejected`);
-    }
-  };
-
-  const handleValidation = () => {
-    if (invalidString) {
-      return;
-    }
-    validate();
-  };
-
-  const handleSimulation = () => {
-    if (invalidString) {
-      return;
-    }
-    setSimulate(true);
-  };
-
-  const handleClick = () => {
-    if (invalidString) {
-      return;
-    }
-
-    if (counter == string.length) {
-      validate();
-      setSimulationText("Simulation Ended");
-
-      return;
-    }
-
-    const argA = string.charAt(counter) == "a" ? true : false;
-    const argB = !argA;
-    console.log("argA: ", argA);
-    console.log("argB: ", argB);
-
-    const q0Change = string.charAt(counter) == "a" ? "q1" : "q2";
-    const q1Change = string.charAt(counter) == "a" ? "q0" : "q3";
-    const q2Change = string.charAt(counter) == "a" ? "q3" : "q0";
-    const q3Change = string.charAt(counter) == "a" ? "q2" : "q1";
-
-    const change = (q0, q1, q2, q3, newState) => {
-      console.log("q0: ", q0);
-      console.log("q1: ", q1);
-      console.log("q2: ", q2);
-      console.log("q3: ", q3);
-      console.log("newState", newState);
-
-      setQ0(q0);
-      setQ1(q1);
-      setQ2(q2);
-      setQ3(q3);
-      setState(newState);
-      setSimulationText("Simulation Started");
-    };
-
-    const obj = {
-      q0: () => change(false, argA, argB, false, q0Change),
-      q1: () => change(argA, false, false, argB, q1Change),
-      q2: () => change(argB, false, false, argA, q2Change),
-      q3: () => change(false, argB, argA, false, q3Change),
-    };
-
-    obj[state]();
-    setCounter((prev) => prev + 1);
-    if (counter + 1 == string.length) {
-      validate();
-      setSimulationText("Simulation Ended");
-
-      return;
-    }
-    console.log("String: ", string.charAt(0) == "a");
-  };
-
-  const handleReset = () => {
-    setSimulationText("Simulation Reset Successfully");
-    setCounter(0);
-    setState("q0");
-    setQ0(true);
-    setQ1(false);
-    setQ2(false);
-    setQ3(false);
-  };
-
-  const handleChange = (e) => {
-    setString(e.target.value.toLowerCase());
-    setInvalidString(!regex.test(e.target.value.toLowerCase()));
-    handleReset();
-  };
-
-  console.log(string);
-
   return (
     <>
       <div className="h-screen w-screen flex justify-center items-center flex-col gap-3 min-w-[600px] ">
-        <div className="flex flex-col items-center gap-4">
-          <div className="flex gap-3 items-center">
-            <Form>
-              <Form.Item
-                name="username"
-                style={{ margin: "0px" }}
-                rules={[
-                  {
-                    required: true,
-                    pattern: regex,
-                    message: "Please enter string containg a or b",
-                  },
-                ]}
-              >
-                <Input
-                  allowClear={true}
-                  placeholder="Enter String"
-                  onChange={handleChange}
-                  value={string}
-                />
-              </Form.Item>
-            </Form>
-            <Button type="primary" onClick={handleValidation}>
-              Validate
-            </Button>
-            <Button type="primary" onClick={handleSimulation}>
-              Simulate
-            </Button>
-          </div>
-          {simulate && <p>{simulationText}</p>}
+        <Form
+          setQ0={setQ0}
+          setQ1={setQ1}
+          setQ2={setQ2}
+          setQ3={setQ3}
+          simulate={simulate}
+          setSimulate={setSimulate}
+          string={string}
+          setString={setString}
+          invalidString={invalidString}
+          setInvalidString={setInvalidString}
+          simulationText={simulationText}
+          setSimulationText={setSimulationText}
+          state={state}
+          setState={setState}
+          regex={regex}
+          counter={counter}
+          setCounter={setCounter}
+        />
 
-          <div className="">
-            <div className="flex gap-3">
-              {simulate && (
-                <Button type="primary" onClick={handleReset}>
-                  Reset
-                </Button>
-              )}
-              {simulate && (
-                <Button type="primary" onClick={handleClick}>
-                  Next
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <div className="w-[500px] flex flex-row flex-wrap gap-y-[253px] justify-center items-center relative">
-          <Circle state={q0} name={"q0"} initial={true} />
-          <img src={img} alt="" />
-          <Circle state={q1} name={"q1"} />
-          <img src={img2} alt="" className="pic-right" />
-          <img src={img2} alt="" className="pic-left" />
-          <Circle state={q2} name={"q2"} />
-          <img src={img} alt="" />
-          <Circle state={q3} name={"q3"} />
-        </div>
+        <DFA q0={q0} q1={q1} q2={q2} q3={q3} />
       </div>
 
-      <button onClick={handleClick}>Next</button>
       <ToastContainer />
-    </>
-  );
-}
-
-function Circle({ state, name, initial }) {
-  return (
-    <>
-      <div
-        id={name}
-        className={`h-[100px] w-[100px] border-black border-2 ${
-          state && "bg-blue-500 text-white"
-        } circle rounded-full flex justify-center items-center`}
-      >
-        {initial ? (
-          <div className="h-[90%] w-[90%] flex justify-center items-center">
-            <FaPlusMinus color={`${state ? "white" : "black"} `} />
-
-            <div>{name}</div>
-          </div>
-        ) : (
-          // <div className="h-[90%] w-[90%] rounded-full border-black border-2 flex justify-center items-center">
-          //   {name}
-          // </div>
-          <div className="">{name}</div>
-        )}
-      </div>
     </>
   );
 }

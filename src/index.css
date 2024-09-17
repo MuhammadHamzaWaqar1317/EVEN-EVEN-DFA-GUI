@@ -6,21 +6,6 @@ body {
   overflow: hidden;
 }
 
-.arrow {
-  pointer-events: none;
-}
-
-.arrow__path {
-  stroke: #000;
-  fill: transparent;
-  /* stroke-dasharray: 4 2; */
-}
-
-.arrow__head line {
-  stroke: #000;
-  stroke-width: 2px;
-}
-
 .pic-right {
   position: absolute;
   transform: rotate(90deg);
@@ -30,10 +15,6 @@ body {
   position: absolute;
   transform: rotate(90deg);
   right: 300px;
-}
-
-.pic {
-  transform: rotate(90deg);
 }
 
 .ant-form-item-explain-error {
